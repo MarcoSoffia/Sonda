@@ -29,16 +29,16 @@ Networking, encoding, crypto, properties, offensive, eccezioni e errori, math.
 #### Implementazione
 La trasmissione è composta da tre tipi logici di frame:
 
-- `META`: descrive la trasmissione, quindi numero di chunk, chunk size, dimensione totale, hash SHA-256 e versione del formato;
-- `DATA`: contiene un chunk grezzo del file;
-- `END`: opzionale, conferma la fine dello stream o ripete l'hash finale.
+- `META`: descrive la trasmissione, quindi numero di chunk, chunk size, dimensione totale, hash SHA-256 e versione del formato; `Raw.load` inizia con `0x00`
+- `DATA`: contiene un chunk grezzo del file; `Raw.load` inizia con `0x01`
+- `META`: Reinviato per segnalare la fine della trasmissione (stesso formato del primo)
 
 I file vanno suddivisi in chunk perché la dimensione del payload ICMP è limitata. Inoltre ICMP non garantisce consegna, ordine o ritrasmissione: per questo il tool deve supportare almeno una strategia di ridondanza, ad esempio inviando più volte gli stessi frame.
 
 #### Classi:
 
 **1. Frame**  
-Frame è il pacchetto logico applicativo interno, usato per rappresentare META, DATA o END prima della creazione del pacchetto ICMP.
+Frame è il pacchetto logico applicativo interno, usato per rappresentare META, DATA prima della creazione del pacchetto ICMP.
 
 **2. MetaData**  
 MetaData contiene le informazioni della trasmissione: numero di chunk, chunk size, dimensione del file, hash e versione del protocollo.
@@ -86,14 +86,14 @@ Sender
 1. Lettura del file come bytes
 2. Divisione del file in chunk
 3. Calcolo dei metadati: numero di chunk, chunk size, file size, SHA-256 e session_id
-4. Creazione dei frame META, DATA ed eventuale END
+4. Creazione dei frame META, DATA
 5. Costruzione dei pacchetti ICMP con `ICMP.id`, `ICMP.seq` e `Raw.load`
 6. Invio dei pacchetti tramite strategia di ridondanza
 
 Reader
 1. Legge i pacchetti da una conversazione `.pcap`
 2. Filtra i pacchetti della stessa sessione tramite `ICMP.id`
-3. Classifica META, DATA ed eventuale END usando `ICMP.seq`
+3. Classifica META, DATA  `ICMP.seq`
 4. Deduplica i DATA ripetuti
 5. Ricostruisce il file ordinando i chunk
 6. Verifica lo SHA-256 del file ricostruito rispetto all'hash dichiarato nel META
@@ -173,16 +173,16 @@ $$
 chunkSize = 1472 - 72 = 1400
 $$
 
-Poi aggiungiamo almeno un pacchetto META. Il pacchetto END è opzionale:
+Aggiungiamo due pacchetti META (iniziale e finale):
 
 $$
-frameBase = nChunk + nMeta + nEnd
+frameBase = nChunk + nMeta
 $$
 
 Nel caso base:
 
 $$
-nMeta = 1,\quad nEnd = 0
+nMeta = 2
 $$
 
 Con ridondanza `R`:
@@ -200,9 +200,8 @@ Dove:
 | `payloadMax` | payload massimo teorico ICMP |
 | `margine` | spazio lasciato libero per evitare problemi pratici |
 | `nChunk` | numero di chunk dati |
-| `nMeta` | numero di pacchetti META |
-| `nEnd` | numero di pacchetti END opzionali |
-| `frameBase` | numero di frame DATA + META + END |
+| `nMeta` | numero di pacchetti META (iniziale + finale) |
+| `frameBase` | numero di frame DATA + META |
 | `R` | fattore di ridondanza |
 | `pacchettiTotali` | numero totale di pacchetti/frame da trasmettere |
 
@@ -222,20 +221,18 @@ $$
 \lceil \frac{1.048.576}{1400} \rceil = 749 \, chunk
 $$
 
-Aggiungendo un pacchetto META obbligatorio e nessun END:
+Aggiungendo i due pacchetti META (iniziale e finale):
 
 $$
-frameBase = 749 + 1 = 750
+frameBase = 749 + 2 = 751
 $$
-
-Se decidiamo di inviare anche un END, `frameBase` diventa `751`.
 
 | Ridondanza | Pacchetti totali |
 |---:|---:|
-| 1x | 750 |
-| 2x | 1.500 |
-| 3x | 2.250 |
-| 5x | 3.750 |
+| 1x | 751 |
+| 2x | 1.502 |
+| 3x | 2.253 |
+| 5x | 3.755 |
 
 ---
 
@@ -255,10 +252,10 @@ Questo è il caso ottimizzato: usa DATA raw e riduce molto il numero di pacchett
 
 | Ridondanza | Pacchetti | 10 pps | 50 pps | 100 pps |
 |---:|---:|---:|---:|---:|
-| 1x | 750 | 75 s | 15 s | 7,5 s |
-| 2x | 1.500 | 150 s | 30 s | 15 s |
-| 3x | 2.250 | 225 s | 45 s | 22,5 s |
-| 5x | 3.750 | 375 s | 75 s | 37,5 s |
+| 1x | 751 | 75 s | 15 s | 7,5 s |
+| 2x | 1.502 | 150 s | 30 s | 15 s |
+| 3x | 2.253 | 225 s | 45 s | 22,5 s |
+| 5x | 3.755 | 375 s | 75 s | 37,5 s |
 
 ---
 
