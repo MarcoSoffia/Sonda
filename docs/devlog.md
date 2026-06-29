@@ -2,11 +2,12 @@
 
 ## Settimana 1 (23–27 giugno)
 
-> Da scrivere
+> Planning
 
 ## Settimana 2 (30 giugno – 4 luglio)
 
-> Da scrivere
+> UML
+> Prime funzioni?
 
 ## Settimana 3 (7–11 luglio)
 

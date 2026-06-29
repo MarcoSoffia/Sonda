@@ -5,7 +5,7 @@ Tool da laboratorio per studiare come dati arbitrari possano essere trasportati 
 ## Installazione
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/MarcoSoffia/Sonda.git
 cd Sonda
 pip install -r requirements.txt
 ```

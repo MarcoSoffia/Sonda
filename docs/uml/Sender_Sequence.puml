@@ -1,0 +1,30 @@
+@startuml
+title Sonda - Sender Sequence
+
+actor User
+participant SenderEngine
+participant Chunker
+participant IntegrityService
+participant Codec
+participant TransmissionStrategy
+participant IcmpPacketBuilder
+participant PacketSender
+participant Scapy
+
+User -> SenderEngine : send(file,remote_ip)
+SenderEngine -> Chunker : split(file_bytes)
+Chunker --> SenderEngine : chunk list
+SenderEngine -> IntegrityService : sha256(file_bytes)
+SenderEngine -> Codec : create META/DATA frames
+Codec --> SenderEngine : frames
+SenderEngine -> TransmissionStrategy : plan(frames)
+TransmissionStrategy --> SenderEngine : ordered frames
+
+loop for each frame
+  SenderEngine -> IcmpPacketBuilder : build(frame)
+  IcmpPacketBuilder --> SenderEngine : packet
+  SenderEngine -> PacketSender : send(packet)
+  PacketSender -> Scapy : send(packet)
+end
+
+@enduml
