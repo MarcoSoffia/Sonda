@@ -1,4 +1,4 @@
-# Sonda — ICMP Exfiltration Tool
+# Sonda - ICMP Exfiltration Tool
 
 Tool da laboratorio per studiare come dati arbitrari possano essere trasportati dentro traffico ICMP Echo e ricostruiti da una cattura di rete.
 
