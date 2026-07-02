@@ -1,4 +1,4 @@
-import Chunker
+import chunker
 import argparse
 from pathlib import Path
 
@@ -15,6 +15,7 @@ usage: main.py -r file.pcap
     )
     parser.add_argument("-s", "--send", metavar="FILE", help="Send a file over a network protocol")
     parser.add_argument("-r", "--read", metavar="FILE", help="Read a pcap file")
+    parser.add_argument("-st", "--strategy", help="Select a strategy for sending the file")
 
     return parser 
 
@@ -30,7 +31,7 @@ if __name__ == "__main__":
     with open(file_path, "rb") as f:
         file = f.read()
 
-    chunker = Chunker.Chunker(file)
+    chunker = chunker.Chunker(file)
     chunks = chunker.chunk()
 
     [print(chunk) for chunk in chunks]

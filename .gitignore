@@ -22,3 +22,7 @@ Thumbs.db
 
 # Test captures
 *.pcap
+
+# Other
+TODO.md
+

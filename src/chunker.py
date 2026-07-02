@@ -2,7 +2,7 @@
 Class tasked with chunking the file given
 """
 class Chunker:
-    def __init__(self,text, chunk_size=5):
+    def __init__(self, text, chunk_size=5):
         self.file_bytes = text
         self.chunk_size = chunk_size
 
@@ -26,6 +26,7 @@ class Chunker:
     @property
     def chunk_size(self):
         return self.__chunk_size
+    
     @chunk_size.setter
     def chunk_size(self, value):
         if isinstance(value, int) and value > 0:

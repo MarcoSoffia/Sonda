@@ -8,3 +8,7 @@ Uso di IA per miglioria sul codice, progettazione, braindstorming (stackoverflow
 Esempio:
 
 29/06/2026 - src/main.py:32-39 Ho utilizzato l'AI per implementare la funzione `my_func` e definire la logica di base.
+
+---
+
+07/02/2026: codex - Qwen3.6 35B A3B xhigh: Definizione di alcuni componenti architetturali in plan mode.
