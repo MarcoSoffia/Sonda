@@ -65,8 +65,12 @@ if __name__ == "__main__":
     chunks = chunker.chunk()
 
     hash_file = frame.HashFrame(file) # sha256 del documento
-    
     print(hash_file.serialize())
+
     for chunk in chunks:
         payload = frame.DataFrame(chunk)
-        print(payload.serialize()) # Questo valore stara' nel campo Payload
+        text = bytes(payload.de_serialize(payload.serialize())).decode("utf-8") # Questo valore stara' nel campo Payload
+        print(f"{payload.serialize()} | {text}") 
+
+    hash_file = frame.HashFrame(file)
+    print(hash_file.serialize())

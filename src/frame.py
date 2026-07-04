@@ -41,7 +41,18 @@ class DataFrame(Frame):
             raise TypeError("Payload must be non-empty bytes")
 
     def serialize(self) -> str:
-        return "".join(str(x) for x in list(self.payload))
+        return "".join(f"{x:03d}" for x in self.payload)
+    
+    def de_serialize(self, serialized_payload: str) -> list:
+        if not isinstance(serialized_payload, str):
+            raise TypeError("Serialized payload must be a string")
+        
+        data = []
+        for i in range(0, len(serialized_payload), 3):
+            value = int(serialized_payload[i:i + 3])
+            data.append(value)
+
+        return bytes(data)
 
 
 class HashFrame(Frame):
