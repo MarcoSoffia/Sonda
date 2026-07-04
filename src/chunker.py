@@ -21,7 +21,7 @@ class Chunker:
         if isinstance(value, bytes) and value != b"":
             self.__file_bytes = value
         else:
-            raise TypeError
+            raise TypeError("File must be non-empty bytes")
 
     @property
     def chunk_size(self):
@@ -32,4 +32,4 @@ class Chunker:
         if isinstance(value, int) and value > 0:
             self.__chunk_size = value
         else:
-            raise TypeError
+            raise TypeError("Invalid chunk size")

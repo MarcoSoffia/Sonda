@@ -38,7 +38,7 @@ class DataFrame(Frame):
         if isinstance(value, bytes) and value != b"":
             self.__payload = list(value)
         else:
-            raise TypeError("payload must be non-empty bytes")
+            raise TypeError("Payload must be non-empty bytes")
 
     def serialize(self) -> str:
         return "".join(str(x) for x in list(self.payload))
@@ -58,11 +58,11 @@ class HashFrame(Frame):
         if isinstance(file, bytes) and file != b"":
             self.__file = file
         else:
-            raise TypeError("file must be non-empty bytes")
+            raise TypeError("File must be non-empty bytes")
 
     def serialize(self) -> str:
         if not isinstance(self.file, bytes):
-            raise TypeError("file must be bytes")
+            raise TypeError("File must be bytes")
         
         h256 = sha256()
         h256.update(self.file)
