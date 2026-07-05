@@ -12,3 +12,7 @@ Esempio:
 ---
 
 07/02/2026: codex - Qwen3.6 35B A3B xhigh: Definizione di alcuni componenti architetturali in plan mode.
+
+07/05/2026: codex - Qwen3.6 35B A3B xhigh: Rivisitazione di alcuni ruoli delle classi e algoritmi in plan mode.
+
+07/05/2026: codex - Qwen3.6 35B A3B xhigh: Nuovi test e astrazione di alcuni componenti della classe `Codec` in plan mode.

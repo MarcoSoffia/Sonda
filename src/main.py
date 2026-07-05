@@ -1,4 +1,5 @@
 import frame
+import codec as cx
 import chunker
 import argparse
 from pathlib import Path
@@ -64,21 +65,21 @@ if __name__ == "__main__":
     chunker = chunker.Chunker(file, 12)
     chunks = chunker.chunk()
 
-    hash_file = frame.HashFrame(file) # sha256 del documento
-    print(hash_file.serialize())
+    hash_frame = frame.HashFrame(file)
+    serialized_hash = cx.Codec.serialize(hash_frame)
 
+    print(serialized_hash)
     received = b""
+
     for chunk in chunks:
-        payload = frame.DataFrame(chunk)
+        data_frame = frame.DataFrame(chunk)
 
-        serialized = payload.serialize()
-        deserialized = payload.de_serialize(serialized)
+        serialized = cx.Codec.serialize(data_frame)
+        des_frame = cx.Codec.deserialize(serialized)
 
-        received += deserialized
+        received += des_frame.payload
 
-        print(f"{serialized} | {deserialized}")
+        print(f"{serialized} | {des_frame.payload}")
 
-    text = received.decode("utf-8")
-
-    hash_file = frame.HashFrame(file)
-    print(hash_file.serialize())
+    file = received.decode("utf-8")
+    print(file)

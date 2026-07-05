@@ -1,5 +1,6 @@
 from hashlib import sha256
-from abc import ABC, abstractmethod
+from abc import ABC
+
 
 class Frame(ABC):
     CODE_HASH = 0x00
@@ -7,7 +8,7 @@ class Frame(ABC):
 
     def __init__(self, frame_type: int):
         self.type = frame_type    
-    
+
     @property
     def type(self) -> int:
         return self.__type
@@ -18,10 +19,6 @@ class Frame(ABC):
             self.__type = value
         else:
             raise TypeError("Invalid frame type")
-
-    @abstractmethod
-    def serialize(self) -> str:
-        pass
 
 
 class DataFrame(Frame):
@@ -36,29 +33,16 @@ class DataFrame(Frame):
     @payload.setter
     def payload(self, value: bytes):
         if isinstance(value, bytes) and value != b"":
-            self.__payload = list(value)
+            self.__payload = value
         else:
             raise TypeError("Payload must be non-empty bytes")
-
-    def serialize(self) -> str:
-        return "".join(f"{x:03d}" for x in self.payload)
-    
-    def de_serialize(self, serialized_payload: str) -> list:
-        if not isinstance(serialized_payload, str):
-            raise TypeError("Serialized payload must be a string")
-        
-        data = []
-        for i in range(0, len(serialized_payload), 3):
-            value = int(serialized_payload[i:i + 3])
-            data.append(value)
-
-        return bytes(data)
 
 
 class HashFrame(Frame):
     def __init__(self, file: bytes):
         super().__init__(Frame.CODE_HASH)
         self.file = file
+        self.digest = self.calculate_hash(file)
 
     @property
     def file(self) -> bytes:
@@ -71,10 +55,19 @@ class HashFrame(Frame):
         else:
             raise TypeError("File must be non-empty bytes")
 
-    def serialize(self) -> str:
-        if not isinstance(self.file, bytes):
-            raise TypeError("File must be bytes")
-        
+    @property
+    def digest(self) -> str:
+        return self.__digest
+
+    @digest.setter
+    def digest(self, value: str):
+        if isinstance(value, str) and len(value) == 64:
+            self.__digest = value
+        else:
+            raise TypeError("Digest must be a valid SHA-256 hex string")
+
+    @staticmethod
+    def calculate_hash(file: bytes) -> str:
         h256 = sha256()
-        h256.update(self.file)
+        h256.update(file)
         return h256.hexdigest()
