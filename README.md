@@ -16,7 +16,7 @@ Richiede permessi di root per inviare pacchetti ICMP raw.
 
 ```bash
 # Invio
-sudo python -m sonda --send --file documento.pdf --remote 192.168.1.10
+sudo python -m sonda --send documento.pdf --remote 192.168.1.10
 
 # Ricezione
 sudo python -m sonda --read cattura.pcap
