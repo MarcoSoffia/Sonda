@@ -2,7 +2,6 @@ import frame
 import chunker
 import packet_builder as pb
 from codec import Codec as cx
-from packet_builder import PacketBuilder as pb
 from pathlib import Path
 from helper import create_parser
 import scapy.all as scapy
@@ -28,6 +27,10 @@ if __name__ == "__main__":
     chunks = chunker.chunk()
 
     for seq,chunk in enumerate(chunks):
-        packet = pb.build_packet(cx.serialize(frame.DataFrame(chunk)),seq)
+        packet = pb.PacketBuilder("127.0.0.1",333)
+        pkt = packet.build_packet(cx.serialize(frame.DataFrame(chunk)), seq)
+
+        pkt.show()
+
 
         

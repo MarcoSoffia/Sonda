@@ -20,7 +20,6 @@ class Frame(ABC):
         else:
             raise TypeError("Invalid frame type")
 
-
 class DataFrame(Frame):
     def __init__(self, payload: bytes):
         super().__init__(Frame.CODE_DATA)
