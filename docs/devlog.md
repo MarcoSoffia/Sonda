@@ -6,16 +6,21 @@ Pianificazione del progetto, funzionalita', implementazione, risoluzione dei pro
 Creazione UML per avere un idea generale delle classi e funzionalita' del codice.
 Implementazione iniziale di codice base come funzioni di argparse per i messaggi di help. 
 
-## Settimana 2 (30 giugno – 4 luglio)
+## Settimana 2 (30 giugno – 7 luglio)
 
-Finalizzare il comportamento  delle funzionalita' fondamentali del progetto e la loro struttura. 
-Implementazioni tecniche delle prime funzioni necessarie del `sender` e debug con wireshark del funzionamento effettivo.
-Implementazioni tecniche delle prime funzioni necessarie del `receiver` e debug tecnici.
+Implementazione delle prime classi per un poc funzionante
+codec.py
+frame.py
+main.py (area di testing, in futuro useremo propriamente gli engine)
+helper.py
+packet_builder.py
+frame.py
 
-## Settimana 3 (7–11 luglio)
+## Settimana 3 (8–11 luglio)
 
-Rivedere le funzionalita' andando a ricercare bug implementativi anche con l'ausilio di AI, ritoccare in minima parte le funzionalita' non fondamentali come la UI, i logs e in generale la UX.
+Implementazione degli engine, delle strategie, ritocchi sulle funzioni. Un prodotto funzionante
+To be expanded
 
 ## Settimana 4 (14–18 luglio)
 
-Finalizzare almeno uno dei tre metodi di ridondanza, e definire una PoC funzionate.
+Modalità stealth se la settimana 3 è andata bene
