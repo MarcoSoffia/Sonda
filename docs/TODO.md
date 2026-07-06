@@ -14,13 +14,13 @@
 - [x] Creare `tests/test_frame.py`: test validazione tipi, costruttori
 - [x] Creare `tests/test_chunker.py`: test chunking, validazione parametri
 - [x] Creare `tests/test_codec.py`: test serializzazione/deserializzazione
-- [ ] Creare `src/helper.py`: per la gestione corretta dei messaggi e argomenti
+- [x] Creare `src/helper.py`: per la gestione corretta dei messaggi e argomenti
 
 ---
 
 ## Fase 2 — Packet Building e Strategia
 
-- [ ] Creare `src/packet_builder.py`: classe `PacketBuilder` (costruisce pacchetti ICMP con IP/ICMP/Raw)
+- [x] Creare `src/packet_builder.py`: classe `PacketBuilder` (costruisce pacchetti ICMP con IP/ICMP/Raw)
 - [ ] Creare `src/strategy.py`: classe astratta `TransmissionStrategy` (metodo `plan(frames)`)
 - [ ] Creare `src/strategy.py`: classe `RedundantStrategy` (ripete ogni frame N volte)
 - [ ] Creare `src/strategy.py`: classe `InterleavedStrategy` (ripete l'intero ciclo N volte)

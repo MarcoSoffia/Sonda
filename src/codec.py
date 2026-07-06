@@ -7,7 +7,7 @@ class Codec:
         if not isinstance(payload, bytes):
             raise TypeError("Payload must be bytes")
 
-        return "".join(f"{x:03d}" for x in payload)
+        return "".join(f"{_:03d}" for _ in payload)
 
     @staticmethod
     def strtobyte(serialized: str) -> bytes:
@@ -26,13 +26,13 @@ class Codec:
         return bytes(data)
 
     @staticmethod
-    def serialize(data: frame.Frame) -> str:
+    def serialize(data: frame.Frame) -> bytes:
         if isinstance(data, frame.DataFrame):
             payload = Codec.bytetostr(data.payload)
-            return f"{frame.Frame.CODE_DATA}{payload}"
+            return f"{frame.Frame.CODE_DATA}{payload}".encode("utf-8")
 
         if isinstance(data, frame.HashFrame):
-            return f"{frame.Frame.CODE_HASH}{data.digest}"
+            return f"{frame.Frame.CODE_HASH}{data.digest}".encode("utf-8")
 
         raise TypeError("Unsupported frame")
 

@@ -1,8 +1,11 @@
 import frame
-import codec as cx
 import chunker
+import packet_builder as pb
+from codec import Codec as cx
+from packet_builder import PacketBuilder as pb
 from pathlib import Path
 from helper import create_parser
+import scapy.all as scapy
 
 if __name__ == "__main__":
     BASE_DIR = Path(__file__).resolve().parent
@@ -21,24 +24,10 @@ if __name__ == "__main__":
         file = f.read()
 
     # Da spostare la lettura del file all'interno del chunker ? 
-    chunker = chunker.Chunker(file, 12)
+    chunker = chunker.Chunker(file, 1472)
     chunks = chunker.chunk()
 
-    hash_frame = frame.HashFrame(file)
-    serialized_hash = cx.Codec.serialize(hash_frame)
+    for seq,chunk in enumerate(chunks):
+        packet = pb.build_packet(cx.serialize(frame.DataFrame(chunk)),seq)
 
-    print(serialized_hash)
-    received = b""
-
-    for chunk in chunks:
-        data_frame = frame.DataFrame(chunk)
-
-        serialized = cx.Codec.serialize(data_frame)
-        des_frame = cx.Codec.deserialize(serialized)
-
-        received += des_frame.payload
-
-        print(f"{serialized} | {des_frame.payload}")
-
-    file = received.decode("utf-8")
-    print(file)
+        
