@@ -1,36 +1,32 @@
-import frame
-import chunker
-import packet_builder as pb
-from codec import Codec as cx
 from pathlib import Path
+
 from helper import create_parser
-import scapy.all as scapy
+from sender import SenderEngine
+from strategy import RedundantStrategy
 
 if __name__ == "__main__":
-    BASE_DIR = Path(__file__).resolve().parent
-    
     parser = create_parser()
     args = parser.parse_args()
 
-    file = args.read or args.send
-    file_path = BASE_DIR / file
+    if args.send:
+        file_path = Path(args.send).expanduser()
 
-    if not file_path.exists():
-        print(f"File {file_path} does not exist")
-        exit(1)
+        if not file_path.exists():
+            parser.error(f"File {file_path} does not exist")
 
-    with open(file_path, "rb") as f:
-        file = f.read()
+        sender = SenderEngine(
+            strategy_class=RedundantStrategy,
+            chunk_size=1471,
+            icmp_id=333,
+        )
 
-    # Da spostare la lettura del file all'interno del chunker ? 
-    chunker = chunker.Chunker(file, 1472)
-    chunks = chunker.chunk()
+        try:
+            sent_packets = sender.send(file_path)
+        except (OSError, TypeError, ValueError) as error:
+            parser.error(str(error))
 
-    for seq,chunk in enumerate(chunks):
-        packet = pb.PacketBuilder("127.0.0.1",333)
-        pkt = packet.build_packet(cx.serialize(frame.DataFrame(chunk)), seq)
-
-        pkt.show()
-
-
-        
+        print(
+            f"Transmission completed: "
+            f"{sent_packets} packets sent to {sender.destination}"
+        )
+    
