@@ -3,7 +3,7 @@ from pathlib import Path
 from helper import create_parser
 from sender import SenderEngine
 from strategy import RedundantStrategy
-from reader import Reader
+import reader 
 
 if __name__ == "__main__":
     parser = create_parser()
@@ -32,17 +32,4 @@ if __name__ == "__main__":
         )
     
     elif args.read:
-            file_path = Path(args.read)
-            saved = "main.py"
-
-            reader = Reader()
-            count, hash, file = reader.read(file_path)
-
-            file_data = b"".join(file)
-
-            hash_recieved = reader.calculate_hash(file_data)
-            hash_from_file = hash.decode()
-
-            if hash_recieved == hash_from_file:
-                saved = Path("received_file").write_bytes(file_data)
-                print(f"File received and saved as {saved}")
+        reader.read(args.read)
