@@ -22,8 +22,8 @@ usage: main.py -r file.pcap
     group.add_argument(
         "-r",
         "--read",
-        metavar="FILE",
-        help="Read a file",
+        metavar="PCAP",
+        help="Read packets from the specified PCAP file.",
     )
 
     parser.add_argument(
