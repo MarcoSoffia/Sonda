@@ -44,3 +44,26 @@ class RedundantStrategy(TransmissionStrategy):
 
     def plan(self) -> list:
         return [packet for packet in self.packets for _ in range(self.repeat)]
+
+
+class InterleavedStrategy(TransmissionStrategy):
+    def __init__(self, packets: list, cycles: int):
+        super().__init__(packets)
+        self.cycles = cycles
+
+    @property
+    def cycles(self):
+        return self.__cycles
+
+    @cycles.setter
+    def cycles(self, value: int):
+        if not isinstance(value, int):
+            raise TypeError("cycles must be an integer")
+
+        if value <= 0:
+            raise ValueError("cycles must be greater than zero")
+
+        self.__cycles = value
+
+    def plan(self) -> list:
+        return [packet for _ in range(self.cycles) for packet in self.packets]
