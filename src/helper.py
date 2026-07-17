@@ -30,7 +30,7 @@ usage: main.py -r file.pcap
         "-a",
         "--address",
         metavar="ADDRESS",
-        help="Destination address",
+        help="Destination address (required with --send)",
     )
 
     parser.add_argument(

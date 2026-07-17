@@ -29,8 +29,17 @@ class SenderEngine:
 
         chunks = Chunker(file_data, self.chunk_size).chunk()
 
-        frames = [DataFrame(chunk) for chunk in chunks]
-        frames.append(HashFrame(file_data))
+        hash_frame = HashFrame(
+            file_data,
+            Path(file_path).name,
+            len(chunks),
+            self.chunk_size,
+            self.icmp_id,
+        )
+
+        frames = [hash_frame]
+        frames.extend(DataFrame(chunk) for chunk in chunks)
+        frames.append(hash_frame)
 
         builder = PacketBuilder(self.destination, self.icmp_id)
 

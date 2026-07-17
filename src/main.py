@@ -10,6 +10,9 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.send:
+        if not args.address:
+            parser.error("--address is required when using --send")
+
         file_path = Path(args.send).expanduser()
 
         if not file_path.exists():
@@ -28,6 +31,7 @@ if __name__ == "__main__":
 
         sender = SenderEngine(
             strategy_class=strategy_class,
+            destination=args.address,
             strategy_options=strategy_options,
             chunk_size=1471,
             icmp_id=333,
@@ -44,17 +48,35 @@ if __name__ == "__main__":
         )
     
     elif args.read:
-            file_path = Path(args.read)
-            saved = "main.py"
+        file_path = Path(args.read)
+        reader = Reader()
 
-            reader = Reader()
-            count, hash, file = reader.read(file_path)
-
+        try:
+            count, hash_frame, file = reader.read(file_path)
             file_data = b"".join(file)
+            received_hash = reader.calculate_hash(file_data)
 
-            hash_recieved = reader.calculate_hash(file_data)
-            hash_from_file = hash.decode()
+            if len(file_data) != hash_frame.file_size:
+                raise ValueError("Received file size does not match metadata")
 
-            if hash_recieved == hash_from_file:
-                saved = Path("received_file").write_bytes(file_data)
-                print(f"File received and saved as {saved}")
+            if received_hash != hash_frame.digest:
+                raise ValueError("Received file hash does not match metadata")
+
+            output_path = Path(f"received_{hash_frame.filename}")
+            output_path.write_bytes(file_data)
+        except (OSError, TypeError, ValueError) as error:
+            parser.error(str(error))
+
+        print(
+            f"Transmission received successfully\n"
+            f"Filename: {hash_frame.filename}\n"
+            f"File size: {hash_frame.file_size} bytes declared, "
+            f"{len(file_data)} bytes received\n"
+            f"Chunks: {len(file)}/{hash_frame.n_chunks}\n"
+            f"Chunk size: {hash_frame.chunk_size} bytes\n"
+            f"SHA-256: {hash_frame.digest}\n"
+            f"Session id: {hash_frame.session_id}\n"
+            f"Unique packets: {count}\n"
+            f"Integrity: OK\n"
+            f"Saved as: {output_path.resolve()}"
+        )
