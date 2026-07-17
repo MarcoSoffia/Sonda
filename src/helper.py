@@ -36,7 +36,18 @@ usage: main.py -r file.pcap
     parser.add_argument(
         "-st",
         "--strategy",
+        choices=("redundant", "interleaved"),
+        default="redundant",
         help="Select a strategy for sending the file",
+    )
+
+    parser.add_argument(
+        "-n",
+        "--repeat",
+        type=int,
+        default=3,
+        metavar="N",
+        help="Number of repetitions or transmission cycles",
     )
 
     return parser

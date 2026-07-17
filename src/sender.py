@@ -14,7 +14,7 @@ class SenderEngine:
         self,
         strategy_class: type[TransmissionStrategy],
         destination: str = "127.0.0.1",
-        strategy_options: dict | None = {"repeat": 3},
+        strategy_options: dict | None = None,
         chunk_size: int = 1471,
         icmp_id: int = 333,
     ):

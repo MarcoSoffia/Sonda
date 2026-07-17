@@ -2,7 +2,7 @@ from pathlib import Path
 
 from helper import create_parser
 from sender import SenderEngine
-from strategy import RedundantStrategy
+from strategy import InterleavedStrategy, RedundantStrategy
 from reader import Reader
 
 if __name__ == "__main__":
@@ -15,8 +15,20 @@ if __name__ == "__main__":
         if not file_path.exists():
             parser.error(f"File {file_path} does not exist")
 
+        strategy_class, strategy_options = {
+            "redundant": (
+                RedundantStrategy,
+                {"repeat": args.repeat},
+            ),
+            "interleaved": (
+                InterleavedStrategy,
+                {"cycles": args.repeat},
+            ),
+        }[args.strategy]
+
         sender = SenderEngine(
-            strategy_class=RedundantStrategy,
+            strategy_class=strategy_class,
+            strategy_options=strategy_options,
             chunk_size=1471,
             icmp_id=333,
         )

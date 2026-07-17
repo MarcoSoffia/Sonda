@@ -8,7 +8,7 @@ class Reader:
     def read(self, file_path: str) -> tuple[int, str, list]:
         packets = rdpcap(str(file_path))
         received = {}
-        file_chunks = []
+        file_chunks = {}
         received_hash = None
 
         for packet in packets:
@@ -27,9 +27,14 @@ class Reader:
             if payload[0] == 0x00:
                 received_hash = payload[1:]
             else:
-                file_chunks.append(payload[1:])
+                file_chunks[sequence] = payload[1:]
 
-        return len(received), received_hash, file_chunks
+        ordered_chunks = [
+            file_chunks[sequence]
+            for sequence in sorted(file_chunks)
+        ]
+
+        return len(received), received_hash, ordered_chunks
 
     def read_payload(self, packet) -> bytes:
         if not packet.haslayer(ICMP):
