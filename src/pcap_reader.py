@@ -1,29 +1,27 @@
 from scapy.all import ICMP, Raw, rdpcap
 
+"""
+Class tasked with reading the pcap file captured
+"""
 
 class PcapReader:
-    def __init__(self, icmp_id: int = 333):
-        self.icmp_id = icmp_id
-
-    def read(self, file_path: str) -> list:
+    def read(self, file_path: str) -> list[tuple[int, int, bytes]]:
         packets = rdpcap(str(file_path))
-        valid_packets = []
+        icmp_payloads = []
 
         for packet in packets:
             if not packet.haslayer(ICMP):
                 continue
 
-            if packet[ICMP].id != self.icmp_id:
-                continue
-
             if not packet.haslayer(Raw):
                 continue
 
-            valid_packets.append(
+            icmp_payloads.append(
                 (
+                    packet[ICMP].id,
                     packet[ICMP].seq,
                     bytes(packet[Raw].load),
                 )
             )
 
-        return valid_packets
+        return icmp_payloads

@@ -34,7 +34,6 @@ if __name__ == "__main__":
             destination=args.address,
             strategy_options=strategy_options,
             chunk_size=1471,
-            icmp_id=333,
         )
 
         try:
@@ -44,7 +43,8 @@ if __name__ == "__main__":
 
         print(
             f"Transmission completed: "
-            f"{sent_packets} packets sent to {sender.destination}"
+            f"{sent_packets} packets sent to {sender.destination}\n"
+            f"Session id: {sender.icmp_id}"
         )
     
     elif args.read:

@@ -1,5 +1,7 @@
 import argparse
-
+"""
+Clip helper
+"""
 def create_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="Sonda",

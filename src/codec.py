@@ -1,8 +1,25 @@
 import json
 
 import frame
-
+"""
+Class tasked with serializing the frames
+"""
 class Codec:
+    PROTOCOL_MAGIC = b"SONDA"
+    PROTOCOL_VERSION = 1
+
+    @classmethod
+    def is_sonda_hash_frame(cls, serialized_frame: bytes) -> bool:
+        """Return whether *serialized_frame* has the Sonda hash-frame header."""
+        header = (
+            bytes([frame.Frame.CODE_HASH])
+            + cls.PROTOCOL_MAGIC
+            + bytes([cls.PROTOCOL_VERSION])
+        )
+        return isinstance(serialized_frame, bytes) and serialized_frame.startswith(
+            header
+        )
+
     @staticmethod
     def serialize(data: frame.Frame) -> bytes:
         if isinstance(data, frame.DataFrame):
@@ -25,7 +42,12 @@ class Codec:
                 sort_keys=True,
             ).encode("utf-8")
 
-            serialized_frame = bytes([data.type]) + metadata_raw
+            serialized_frame = (
+                bytes([data.type])
+                + Codec.PROTOCOL_MAGIC
+                + bytes([Codec.PROTOCOL_VERSION])
+                + metadata_raw
+            )
 
             if len(serialized_frame) > 1472:
                 raise ValueError("HashFrame exceeds ICMP payload size")
@@ -49,8 +71,22 @@ class Codec:
             return frame.DataFrame(payload_raw)
 
         if frame_type == frame.Frame.CODE_HASH:
+            header_size = len(Codec.PROTOCOL_MAGIC) + 1
+
+            if len(payload_raw) < header_size:
+                raise ValueError("Invalid Sonda HashFrame header")
+
+            magic = payload_raw[: len(Codec.PROTOCOL_MAGIC)]
+            version = payload_raw[len(Codec.PROTOCOL_MAGIC)]
+
+            if magic != Codec.PROTOCOL_MAGIC:
+                raise ValueError("Unknown HashFrame protocol")
+
+            if version != Codec.PROTOCOL_VERSION:
+                raise ValueError("Unsupported Sonda protocol version")
+
             try:
-                metadata = json.loads(payload_raw.decode("utf-8"))
+                metadata = json.loads(payload_raw[header_size:].decode("utf-8"))
             except (UnicodeDecodeError, json.JSONDecodeError) as error:
                 raise ValueError("Invalid HashFrame metadata") from error
 
@@ -78,7 +114,3 @@ class Codec:
             return obj
 
         raise ValueError("Unknown frame type")
-
-
-    # Codec rimosso bytetostr e strtobytes a causa dell'aggiunta di overhead 1400 byte di chunk diventavano circa 4200 byte di payload
-    # ora manteniamo tutto in bytes senza fare conversioni. Convertito serialize e desereliaze a trattare solo bytes

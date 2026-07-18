@@ -1,7 +1,8 @@
 from hashlib import sha256
 from abc import ABC
-
-
+"""
+Class tasked with taking chunks and turning them into frames
+"""
 class Frame(ABC):
     CODE_HASH = 0x00
     CODE_DATA = 0x01
@@ -135,8 +136,8 @@ class HashFrame(Frame):
         if not isinstance(value, int):
             raise TypeError("Session id must be an integer")
 
-        if value < 0 or value > 65535:
-            raise ValueError("Session id must be between 0 and 65535")
+        if value <= 0 or value > 65535:
+            raise ValueError("Session id must be between 1 and 65535")
 
         self.__session_id = value
 
