@@ -58,6 +58,24 @@ Le strategie disponibili sono:
 - `redundant` (predefinita): invia ogni pacchetto consecutivamente `N` volte;
 - `interleaved`: invia l'intera sequenza di pacchetti per `N` cicli.
 
+### Cattura dei pacchetti con tcpdump (Linux)
+
+Per ricostruire un trasferimento, avvia la cattura **prima** dell'invio su un
+host o un'interfaccia che osservi il traffico ICMP. Sostituisci `eth0` con
+l'interfaccia corretta:
+
+```bash
+sudo tcpdump -i eth0 -nn -w ./cattura.pcap icmp
+```
+Infine passa la cattura al reader:
+
+```bash
+.venv/bin/python3 src/main.py --read ./cattura.pcap
+```
+
+Il reader ignora i pacchetti ICMP non pertinenti e cerca il primo
+trasferimento Sonda completo e valido.
+
 ### Lettura di una cattura
 
 ```bash
